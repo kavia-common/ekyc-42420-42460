@@ -11,6 +11,7 @@ import Register from '../components/auth/Register';
 import Profile from '../components/profile/Profile';
 import KYCForm from '../components/kyc/KYCForm';
 import DocumentUpload from '../components/kyc/DocumentUpload';
+import StatusTracker from '../components/kyc/StatusTracker';
 
 // Simple placeholder pages for vertical slice
 const Home = () => (
@@ -22,15 +23,6 @@ const Home = () => (
         <StatusBadge status="approved" />
         <StatusBadge status="rejected" />
       </div>
-    </RetroCard>
-  </div>
-);
-
-const KycStatus = () => (
-  <div className="container">
-    <RetroCard title="KYC Status">
-      <p>Track the status of your submission.</p>
-      <StatusBadge status="pending" />
     </RetroCard>
   </div>
 );
@@ -77,7 +69,7 @@ export default function AppRouter() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/kyc/form" element={<KYCForm />} />
               <Route path="/kyc/upload" element={<DocumentUpload />} />
-              <Route path="/kyc/status" element={<KycStatus />} />
+              <Route path="/kyc/status" element={<StatusTracker />} />
             </Route>
 
             <Route element={<AdminRoute />}>

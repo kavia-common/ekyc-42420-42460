@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getSupabaseClient } from '../supabase/client';
 import { useAuth } from './useAuth';
 
@@ -13,6 +13,8 @@ import { useAuth } from './useAuth';
  * - createSubmission(payload): create a new submission with status 'pending'
  * - updateSubmission(id, updates): update allowed fields of a submission owned by the user
  * - deleteSubmission(id): delete a submission owned by the user
+ * - startRealtime(): subscribe to realtime changes for current user's submissions
+ * - stopRealtime(): unsubscribe from realtime changes
  * 
  * Table expected schema (at minimum):
  * - id (uuid, pk)
@@ -35,6 +37,9 @@ export default function useKYC() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Keep channel ref so we can unsubscribe reliably
+  const channelRef = useRef(null);
+
   // PUBLIC_INTERFACE
   const fetchMySubmissions = useCallback(async () => {
     /** Fetches all KYC submissions for the current authenticated user sorted by created_at desc. */
@@ -49,7 +54,7 @@ export default function useKYC() {
     try {
       const { data, error: fetchErr } = await supabase
         .from('kyc_submissions')
-        .select('id, user_id, first_name, last_name, dob, address, document_type, document_number, status, created_at, updated_at')
+        .select('id, user_id, first_name, last_name, dob, address, document_type, document_number, status, created_at, updated_at, documents')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
       if (fetchErr) {
@@ -107,7 +112,7 @@ export default function useKYC() {
       const { data, error: insErr } = await supabase
         .from('kyc_submissions')
         .insert(insertPayload)
-        .select('id, user_id, first_name, last_name, dob, address, document_type, document_number, status, created_at, updated_at')
+        .select('id, user_id, first_name, last_name, dob, address, document_type, document_number, status, created_at, updated_at, documents')
         .single();
 
       if (insErr) {
@@ -154,9 +159,11 @@ export default function useKYC() {
         }
         payload.dob = dobStr;
       }
-      // status changes should be admin-driven, do not update here unless provided intentionally for future
       if (typeof updates.status !== 'undefined') {
         payload.status = String(updates.status || '').trim().toLowerCase();
+      }
+      if (typeof updates.documents !== 'undefined') {
+        payload.documents = updates.documents; // assume proper JSON array provided by caller
       }
 
       const { data, error: upErr } = await supabase
@@ -164,7 +171,7 @@ export default function useKYC() {
         .update(payload)
         .eq('id', id)
         .eq('user_id', user.id)
-        .select('id, user_id, first_name, last_name, dob, address, document_type, document_number, status, created_at, updated_at')
+        .select('id, user_id, first_name, last_name, dob, address, document_type, document_number, status, created_at, updated_at, documents')
         .single();
 
       if (upErr) {
@@ -213,6 +220,71 @@ export default function useKYC() {
     }
   }, [supabase, user]);
 
+  // PUBLIC_INTERFACE
+  const startRealtime = useCallback(async () => {
+    /** Subscribes to insert/update/delete events on kyc_submissions for current user and keeps local cache in sync. */
+    if (!user) return;
+    // Avoid duplicate channels
+    if (channelRef.current) return;
+
+    const channel = supabase
+      .channel(`kyc_submissions_user_${user.id}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'kyc_submissions', filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          const { eventType, new: newRow, old: oldRow } = payload;
+          setSubmissions((prev) => {
+            if (eventType === 'INSERT') {
+              // Prepend new submission if not present
+              const exists = prev.some((s) => s.id === newRow.id);
+              const updated = exists ? prev.map((s) => (s.id === newRow.id ? newRow : s)) : [newRow, ...prev];
+              // Keep order by created_at desc
+              return [...updated].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+            if (eventType === 'UPDATE') {
+              return prev.map((s) => (s.id === newRow.id ? { ...s, ...newRow } : s));
+            }
+            if (eventType === 'DELETE') {
+              return prev.filter((s) => s.id !== oldRow.id);
+            }
+            return prev;
+          });
+        }
+      )
+      .subscribe((status) => {
+        // eslint-disable-next-line no-console
+        if (process.env.NODE_ENV !== 'production') console.log('Realtime status channel:', status);
+      });
+
+    channelRef.current = channel;
+  }, [supabase, user]);
+
+  // PUBLIC_INTERFACE
+  const stopRealtime = useCallback(() => {
+    /** Unsubscribes from realtime channel if present. */
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+      channelRef.current = null;
+    }
+  }, [supabase]);
+
+  // Auto manage realtime subscription lifecycle
+  useEffect(() => {
+    // When user changes, reset local cache and subscription
+    setSubmissions([]);
+    stopRealtime();
+    if (user?.id) {
+      // Initial fetch and start realtime
+      fetchMySubmissions();
+      startRealtime();
+    }
+    return () => {
+      stopRealtime();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   return useMemo(
     () => ({
       submissions,
@@ -222,7 +294,9 @@ export default function useKYC() {
       createSubmission,
       updateSubmission,
       deleteSubmission,
+      startRealtime,
+      stopRealtime,
     }),
-    [submissions, loading, error, fetchMySubmissions, createSubmission, updateSubmission, deleteSubmission]
+    [submissions, loading, error, fetchMySubmissions, createSubmission, updateSubmission, deleteSubmission, startRealtime, stopRealtime]
   );
 }
