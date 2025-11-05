@@ -1,16 +1,21 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import '../../styles/retro.css';
+import { useAuth } from '../../hooks/useAuth';
 
 /**
  * PUBLIC_INTERFACE
  * Navbar
- * Top navigation bar with Retro styling and placeholder conditional links.
+ * Top navigation bar with Retro styling and conditional links from auth state.
  */
 export default function Navbar() {
-  // TODO: read auth state from context/store
-  const isAuthenticated = false; // placeholder
-  const isAdmin = false; // placeholder
+  const navigate = useNavigate();
+  const { isAuthenticated, isAdmin, signOut } = useAuth();
+
+  async function onLogout() {
+    await signOut();
+    navigate('/', { replace: true });
+  }
 
   return (
     <header className="retro-nav">
@@ -34,6 +39,9 @@ export default function Navbar() {
               <NavLink to="/kyc/form" className="nav-link">KYC Form</NavLink>
               <NavLink to="/kyc/upload" className="nav-link">Upload</NavLink>
               <NavLink to="/kyc/status" className="nav-link">Status</NavLink>
+              <button onClick={onLogout} className="nav-link" style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                Logout
+              </button>
             </>
           )}
           {isAdmin && <NavLink to="/admin" className="nav-link">Admin</NavLink>}

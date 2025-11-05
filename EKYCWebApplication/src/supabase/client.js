@@ -20,11 +20,12 @@ export function getSupabaseClient() {
 
   if (!url || !key) {
     // Do not expose secrets; guide environment setup via error
-    // This throws in development; in production ensure env is set.
     // eslint-disable-next-line no-console
     console.error('Supabase env vars missing. Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY');
   }
 
+  // Create the client even if env is missing to avoid import-time crashes;
+  // runtime operations will fail with clear messages if misconfigured.
   supabaseInstance = createClient(url || '', key || '');
   return supabaseInstance;
 }

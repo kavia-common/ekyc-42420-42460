@@ -6,6 +6,8 @@ import ProtectedRoute from '../components/common/ProtectedRoute';
 import AdminRoute from '../components/common/AdminRoute';
 import RetroCard from '../components/common/RetroCard';
 import StatusBadge from '../components/common/StatusBadge';
+import Login from '../components/auth/Login';
+import Register from '../components/auth/Register';
 
 // Simple placeholder pages for vertical slice
 const Home = () => (
@@ -17,22 +19,6 @@ const Home = () => (
         <StatusBadge status="approved" />
         <StatusBadge status="rejected" />
       </div>
-    </RetroCard>
-  </div>
-);
-
-const Login = () => (
-  <div className="container">
-    <RetroCard title="Login">
-      <p>Login form goes here.</p>
-    </RetroCard>
-  </div>
-);
-
-const Register = () => (
-  <div className="container">
-    <RetroCard title="Register">
-      <p>Registration form goes here.</p>
     </RetroCard>
   </div>
 );
