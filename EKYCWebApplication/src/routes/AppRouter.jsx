@@ -12,6 +12,8 @@ import Profile from '../components/profile/Profile';
 import KYCForm from '../components/kyc/KYCForm';
 import DocumentUpload from '../components/kyc/DocumentUpload';
 import StatusTracker from '../components/kyc/StatusTracker';
+import AdminDashboard from '../components/admin/AdminDashboard';
+import ReviewDetail from '../components/admin/ReviewDetail';
 
 // Simple placeholder pages for vertical slice
 const Home = () => (
@@ -26,28 +28,6 @@ const Home = () => (
     </RetroCard>
   </div>
 );
-
-const Admin = () => (
-  <div className="container">
-    <RetroCard title="Admin Dashboard" subtitle="Review Submissions">
-      <p>Admin overview goes here.</p>
-    </RetroCard>
-  </div>
-);
-
-const AdminReview = ({ submissionId }) => (
-  <div className="container">
-    <RetroCard title={`Review Submission #${submissionId}`}>
-      <p>Detailed review tools appear here.</p>
-    </RetroCard>
-  </div>
-);
-
-function AdminReviewWrapper() {
-  // Use URL params via a tiny wrapper to keep file self-contained
-  const id = window.location.pathname.split('/').pop();
-  return <AdminReview submissionId={id} />;
-}
 
 /**
  * PUBLIC_INTERFACE
@@ -73,8 +53,8 @@ export default function AppRouter() {
             </Route>
 
             <Route element={<AdminRoute />}>
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/admin/review/:submissionId" element={<AdminReviewWrapper />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/review/:submissionId" element={<ReviewDetail />} />
             </Route>
           </Routes>
         </main>
