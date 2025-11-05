@@ -8,6 +8,7 @@ import RetroCard from '../components/common/RetroCard';
 import StatusBadge from '../components/common/StatusBadge';
 import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
+import Profile from '../components/profile/Profile';
 
 // Simple placeholder pages for vertical slice
 const Home = () => (
@@ -23,13 +24,7 @@ const Home = () => (
   </div>
 );
 
-const Profile = () => (
-  <div className="container">
-    <RetroCard title="Profile">
-      <p>User profile management.</p>
-    </RetroCard>
-  </div>
-);
+
 
 const KycForm = () => (
   <div className="container">
