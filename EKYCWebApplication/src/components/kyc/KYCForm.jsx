@@ -4,6 +4,7 @@ import RetroCard from '../common/RetroCard';
 import StatusBadge from '../common/StatusBadge';
 import useKYC from '../../hooks/useKYC';
 import { useAuth } from '../../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * PUBLIC_INTERFACE
@@ -14,6 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 export default function KYCForm() {
   const { user } = useAuth();
   const { createSubmission, fetchMySubmissions, submissions, loading, error } = useKYC();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({
     first_name: '',
@@ -90,6 +92,8 @@ export default function KYCForm() {
       document_number: '',
     });
     await fetchMySubmissions();
+    // Guide user to upload step
+    setTimeout(() => navigate('/kyc/upload'), 600);
   }
 
   return (
@@ -245,6 +249,16 @@ export default function KYCForm() {
             >
               {busy ? 'Submitting...' : 'Submit'}
             </button>
+            {submissions.length > 0 && (
+              <button
+                type="button"
+                onClick={() => navigate('/kyc/upload')}
+                className="nav-link"
+                style={{ cursor: 'pointer' }}
+              >
+                Upload Documents
+              </button>
+            )}
           </div>
         </form>
 

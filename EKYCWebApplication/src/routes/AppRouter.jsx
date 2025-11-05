@@ -10,6 +10,7 @@ import Login from '../components/auth/Login';
 import Register from '../components/auth/Register';
 import Profile from '../components/profile/Profile';
 import KYCForm from '../components/kyc/KYCForm';
+import DocumentUpload from '../components/kyc/DocumentUpload';
 
 // Simple placeholder pages for vertical slice
 const Home = () => (
@@ -21,18 +22,6 @@ const Home = () => (
         <StatusBadge status="approved" />
         <StatusBadge status="rejected" />
       </div>
-    </RetroCard>
-  </div>
-);
-
-
-
-
-
-const KycUpload = () => (
-  <div className="container">
-    <RetroCard title="Document Upload">
-      <p>Upload documents for verification.</p>
     </RetroCard>
   </div>
 );
@@ -87,7 +76,7 @@ export default function AppRouter() {
             <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/kyc/form" element={<KYCForm />} />
-              <Route path="/kyc/upload" element={<KycUpload />} />
+              <Route path="/kyc/upload" element={<DocumentUpload />} />
               <Route path="/kyc/status" element={<KycStatus />} />
             </Route>
 
