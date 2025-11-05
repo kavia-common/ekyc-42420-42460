@@ -204,3 +204,19 @@ html, body, #root {
   border-color: rgba(231, 76, 60, 0.5);
   color: var(--retro-danger);
 }
+
+/* Toast base class hook (layout defined inline for flexibility) */
+.retro-toast {
+  animation: retro-toast-in 180ms ease-out forwards;
+}
+
+@keyframes retro-toast-in {
+  from {
+    transform: translateY(10px) scale(0.98);
+    opacity: 0.0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}

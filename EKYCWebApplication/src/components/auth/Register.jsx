@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import RetroCard from '../common/RetroCard';
 import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -11,6 +12,7 @@ import { useAuth } from '../../hooks/useAuth';
  */
 export default function Register() {
   const { registerWithEmail, error } = useAuth();
+  const notify = useNotifications();
   const [form, setForm] = useState({ email: '', password: '', full_name: '' });
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -23,9 +25,10 @@ export default function Register() {
     setBusy(false);
     if (!signUpError) {
       setDone(true);
-      // Depending on email confirmation settings, the user may need to verify email
-      // We can navigate to login or show a message
+      notify.success('Account created. Check email if confirmation is required.', { duration: 4500 });
       setTimeout(() => navigate('/login', { replace: true }), 1000);
+    } else {
+      notify.error(signUpError.message || 'Registration failed');
     }
   }
 

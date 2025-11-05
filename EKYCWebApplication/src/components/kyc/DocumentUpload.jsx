@@ -5,6 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import useKYC from '../../hooks/useKYC';
 import { getSupabaseClient } from '../../supabase/client';
 import StatusBadge from '../common/StatusBadge';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -17,6 +18,7 @@ export default function DocumentUpload() {
   const { user } = useAuth();
   const supabase = getSupabaseClient();
   const { submissions, fetchMySubmissions, updateSubmission, loading: kycLoading, error: kycError } = useKYC();
+  const notify = useNotifications();
 
   // Select which submission to attach uploads to — use most recent by created_at
   const [currentSubmissionId, setCurrentSubmissionId] = useState(null);
@@ -156,6 +158,7 @@ export default function DocumentUpload() {
 
       if (uploadErr) {
         setMessage({ type: 'error', text: uploadErr.message || 'Upload failed.' });
+        notify.error(uploadErr.message || 'Upload failed');
         return;
       }
 
@@ -174,10 +177,12 @@ export default function DocumentUpload() {
 
       if (metaRes.error) {
         setMessage({ type: 'error', text: metaRes.error.message || 'Failed to save file metadata.' });
+        notify.error(metaRes.error.message || 'Failed to save file metadata');
         return;
       }
 
       setMessage({ type: 'success', text: 'File uploaded and linked to your submission.' });
+      notify.success('File uploaded');
       setFile(null);
       setProgress(0);
       // Refresh list to reflect updated documents/status if any

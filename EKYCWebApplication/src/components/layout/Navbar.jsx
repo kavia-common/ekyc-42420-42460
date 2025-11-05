@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import '../../styles/retro.css';
 import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -11,10 +12,16 @@ import { useAuth } from '../../hooks/useAuth';
 export default function Navbar() {
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, signOut } = useAuth();
+  const notify = useNotifications();
 
   async function onLogout() {
-    await signOut();
-    navigate('/', { replace: true });
+    const { error } = await signOut();
+    if (error) {
+      notify.error(error.message || 'Logout failed');
+    } else {
+      notify.info('Signed out');
+      navigate('/', { replace: true });
+    }
   }
 
   return (

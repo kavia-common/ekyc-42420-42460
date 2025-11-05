@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import '../../styles/retro.css';
 import RetroCard from '../common/RetroCard';
 import StatusBadge from '../common/StatusBadge';
 import { Link } from 'react-router-dom';
 import useAdmin from '../../hooks/useAdmin';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -24,6 +25,14 @@ export default function AdminDashboard() {
     setDocTypeFilter,
     setSearchFilter,
   } = useAdmin();
+
+  const notify = useNotifications();
+
+  useEffect(() => {
+    if (error) {
+      notify.error(error.message || 'Failed to fetch submissions');
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalPages = useMemo(() => {
     return Math.max(1, Math.ceil((total || 0) / (pageSize || 10)));

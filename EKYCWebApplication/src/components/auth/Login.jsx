@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import RetroCard from '../common/RetroCard';
 import { useAuth } from '../../hooks/useAuth';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -10,6 +11,7 @@ import { useAuth } from '../../hooks/useAuth';
  */
 export default function Login() {
   const { signInWithPassword, isAuthenticated, error, loading } = useAuth();
+  const notify = useNotifications();
   const [form, setForm] = useState({ email: '', password: '' });
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -22,7 +24,10 @@ export default function Login() {
     const { error: signInError } = await signInWithPassword(form);
     setBusy(false);
     if (!signInError) {
+      notify.success('Signed in successfully');
       navigate(from, { replace: true });
+    } else {
+      notify.error(signInError.message || 'Failed to sign in');
     }
   }
 

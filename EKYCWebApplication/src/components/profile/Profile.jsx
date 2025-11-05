@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import RetroCard from '../common/RetroCard';
 import useProfile from '../../hooks/useProfile';
 import '../../styles/retro.css';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -18,6 +19,7 @@ export default function Profile() {
     phone: '',
   });
   const [message, setMessage] = useState(null);
+  const notify = useNotifications();
 
   // Initialize form when profile loads
   useEffect(() => {
@@ -50,9 +52,11 @@ export default function Profile() {
     const { error: saveErr } = await save(form);
     if (saveErr) {
       setMessage({ type: 'error', text: saveErr.message || 'Failed to save profile' });
+      notify.error(saveErr.message || 'Failed to save profile');
       return;
     }
     setMessage({ type: 'success', text: 'Profile updated successfully' });
+    notify.success('Profile updated');
     // ensure we see latest values
     await refresh();
   }

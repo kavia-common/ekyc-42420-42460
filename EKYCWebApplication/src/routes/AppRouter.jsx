@@ -14,6 +14,7 @@ import DocumentUpload from '../components/kyc/DocumentUpload';
 import StatusTracker from '../components/kyc/StatusTracker';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import ReviewDetail from '../components/admin/ReviewDetail';
+import ErrorBoundary from '../components/common/ErrorBoundary';
 
 // Simple placeholder pages for vertical slice
 const Home = () => (
@@ -40,23 +41,25 @@ export default function AppRouter() {
       <div className="app-shell">
         <Navbar />
         <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+          <ErrorBoundary>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            <Route element={<ProtectedRoute />}>
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/kyc/form" element={<KYCForm />} />
-              <Route path="/kyc/upload" element={<DocumentUpload />} />
-              <Route path="/kyc/status" element={<StatusTracker />} />
-            </Route>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/kyc/form" element={<KYCForm />} />
+                <Route path="/kyc/upload" element={<DocumentUpload />} />
+                <Route path="/kyc/status" element={<StatusTracker />} />
+              </Route>
 
-            <Route element={<AdminRoute />}>
-              <Route path="/admin" element={<AdminDashboard />} />
-              <Route path="/admin/review/:submissionId" element={<ReviewDetail />} />
-            </Route>
-          </Routes>
+              <Route element={<AdminRoute />}>
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin/review/:submissionId" element={<ReviewDetail />} />
+              </Route>
+            </Routes>
+          </ErrorBoundary>
         </main>
         <Footer />
       </div>

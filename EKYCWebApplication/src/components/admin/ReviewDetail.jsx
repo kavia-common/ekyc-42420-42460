@@ -4,6 +4,7 @@ import RetroCard from '../common/RetroCard';
 import StatusBadge from '../common/StatusBadge';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAdmin from '../../hooks/useAdmin';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -14,6 +15,7 @@ import useAdmin from '../../hooks/useAdmin';
 export default function ReviewDetail() {
   const { submissionId } = useParams();
   const navigate = useNavigate();
+  const notify = useNotifications();
 
   const {
     fetchSubmissionById,
@@ -35,6 +37,7 @@ export default function ReviewDetail() {
       if (!mounted) return;
       if (error) {
         setMessage({ type: 'error', text: error.message || 'Failed to load submission' });
+        notify.error(error.message || 'Failed to load submission');
       } else {
         setSubmission(data);
       }
@@ -50,8 +53,10 @@ export default function ReviewDetail() {
     const { error } = await approveSubmission(submissionId, notes);
     if (error) {
       setMessage({ type: 'error', text: error.message || 'Failed to approve' });
+      notify.error(error.message || 'Approve failed');
     } else {
       setMessage({ type: 'success', text: 'Submission approved' });
+      notify.success('Submission approved');
       setSubmission((s) => (s ? { ...s, status: 'approved' } : s));
     }
   }
@@ -65,8 +70,10 @@ export default function ReviewDetail() {
     const { error } = await rejectSubmission(submissionId, notes);
     if (error) {
       setMessage({ type: 'error', text: error.message || 'Failed to reject' });
+      notify.error(error.message || 'Reject failed');
     } else {
       setMessage({ type: 'success', text: 'Submission rejected' });
+      notify.warn('Submission rejected', { title: 'Action' });
       setSubmission((s) => (s ? { ...s, status: 'rejected' } : s));
     }
   }
@@ -80,8 +87,10 @@ export default function ReviewDetail() {
     const { error } = await requestMoreInfo(submissionId, notes);
     if (error) {
       setMessage({ type: 'error', text: error.message || 'Failed to request info' });
+      notify.error(error.message || 'Request info failed');
     } else {
       setMessage({ type: 'success', text: 'Requested more information from user' });
+      notify.info('Requested more information from user');
       setSubmission((s) => (s ? { ...s, status: 'pending' } : s));
     }
   }

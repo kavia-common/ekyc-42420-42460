@@ -5,6 +5,7 @@ import StatusBadge from '../common/StatusBadge';
 import useKYC from '../../hooks/useKYC';
 import { useAuth } from '../../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '../../utils/notifications';
 
 /**
  * PUBLIC_INTERFACE
@@ -16,6 +17,7 @@ export default function KYCForm() {
   const { user } = useAuth();
   const { createSubmission, fetchMySubmissions, submissions, loading, error } = useKYC();
   const navigate = useNavigate();
+  const notify = useNotifications();
 
   const [form, setForm] = useState({
     first_name: '',
@@ -80,9 +82,11 @@ export default function KYCForm() {
     setBusy(false);
     if (saveErr) {
       setMessage({ type: 'error', text: saveErr.message || 'Failed to save submission' });
+      notify.error(saveErr.message || 'KYC submission failed');
       return;
     }
     setMessage({ type: 'success', text: 'Submission sent. Status is now PENDING.' });
+    notify.success('KYC submitted. Status: PENDING');
     setForm({
       first_name: '',
       last_name: '',
