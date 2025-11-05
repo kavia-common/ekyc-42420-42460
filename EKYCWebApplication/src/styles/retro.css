@@ -1,0 +1,206 @@
+:root {
+  --retro-bg: #0f0f17;
+  --retro-surface: #141424;
+  --retro-surface-2: #1b1b2e;
+  --retro-accent: #e87a41;
+  --retro-accent-2: #ffd166;
+  --retro-text: #e6e6f0;
+  --retro-text-dim: #a6a6c3;
+  --retro-border: #2a2a40;
+  --retro-link: #58a6ff;
+  --retro-success: #2ecc71;
+  --retro-warning: #f39c12;
+  --retro-danger: #e74c3c;
+  --nav-height: 64px;
+  --footer-height: 56px;
+  --container-max: 1100px;
+}
+
+html, body, #root {
+  height: 100%;
+  background: linear-gradient(180deg, #0f0f17 0%, #141424 100%);
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px 16px;
+  margin-top: var(--nav-height);
+  margin-bottom: var(--footer-height);
+}
+
+.retro-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.container { /* utility to align with retro-container visual */
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 16px auto;
+  padding: 0 16px;
+}
+
+/* Navbar */
+.retro-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  background: rgba(20, 20, 36, 0.85);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--retro-border);
+  z-index: 1000;
+}
+
+.retro-nav .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--retro-accent);
+  color: var(--retro-accent);
+  border-radius: 4px;
+  font-weight: 800;
+  transform: rotate(-8deg);
+}
+
+.brand-text {
+  color: var(--retro-text);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.retro-nav .retro-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-link {
+  color: var(--retro-text-dim);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.nav-link.active, .nav-link:hover {
+  color: var(--retro-text);
+  border-color: var(--retro-border);
+  background: var(--retro-surface-2);
+}
+
+/* Footer */
+.retro-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--footer-height);
+  background: rgba(20, 20, 36, 0.8);
+  border-top: 1px solid var(--retro-border);
+}
+
+.retro-footer .retro-container {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--retro-text-dim);
+  font-size: 14px;
+}
+
+.retro-footer a {
+  color: var(--retro-link);
+  text-decoration: none;
+  margin-left: 12px;
+}
+
+/* Retro Card */
+.retro-card {
+  background: linear-gradient(180deg, var(--retro-surface) 0%, var(--retro-surface-2) 100%);
+  color: var(--retro-text);
+  border: 1px solid var(--retro-border);
+  border-radius: 12px;
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+
+.retro-card-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--retro-border);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.retro-card-title {
+  font-size: 20px;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+.retro-card-subtitle {
+  margin: 0;
+  color: var(--retro-text-dim);
+  font-size: 14px;
+}
+
+.retro-card-body {
+  padding: 18px;
+  line-height: 1.6;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 6px 10px;
+  margin-right: 8px;
+  border-radius: 999px;
+  border: 1px solid var(--retro-border);
+  background: var(--retro-surface);
+  color: var(--retro-text);
+  letter-spacing: 0.06em;
+}
+
+.status-approved {
+  border-color: rgba(46, 204, 113, 0.5);
+  color: var(--retro-success);
+}
+
+.status-pending {
+  border-color: rgba(243, 156, 18, 0.5);
+  color: var(--retro-warning);
+}
+
+.status-rejected {
+  border-color: rgba(231, 76, 60, 0.5);
+  color: var(--retro-danger);
+}
